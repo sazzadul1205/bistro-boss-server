@@ -28,19 +28,45 @@ async function run() {
 
         const menuCollection = client.db('bistroDB').collection('menu');
         const reviewsCollection = client.db('bistroDB').collection('reviews');
+        const cartCollection = client.db('bistroDB').collection('cart');
 
+        // menu section
         // view all the menu Items
         app.get('/menu', async (req, res) => {
             const result = await menuCollection.find().toArray();
             res.send(result)
         });
 
+        // Review section
+        // view all review items
         app.get('/reviews', async (req, res) => {
             const result = await reviewsCollection.find().toArray();
             res.send(result)
         });
 
+        // cart section
+        // view all cart item
+        app.get('/cart', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email }
+            const result = await cartCollection.find(query).toArray();
+            res.send(result)
+        });
+        // delete cart
+        app.delete('/cart/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id : new ObjectId(id)}
+            const result = await cartCollection.deleteOne(query)
+            res.send(result)
+        });
 
+        // Add a new cart
+        app.post('/cart', async (req, res) => {
+            const cartItem = req.body;
+            const result = await cartCollection.insertOne(cartItem)
+            res.send(result)
+        });
 
 
 
